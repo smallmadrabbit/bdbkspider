@@ -11,3 +11,4 @@
 2. 爬取后期问题主要是因为获取URL的问题，重复URL太多，爬取速度下降
 
 #总体架构图
+![image](https://github.com/smallmadrabbit/bdbkspider/blob/master/frame.png)
