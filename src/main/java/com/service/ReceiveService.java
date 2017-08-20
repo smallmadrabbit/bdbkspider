@@ -1,16 +1,16 @@
 package com.service;
 
 import com.model.PageInfoEntity;
-import com.utils.JdbcConnector;
+import com.thread.local.ConnectionThreadLocal;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +20,8 @@ import java.util.List;
 @Service
 public class ReceiveService {
     private static final Logger log = Logger.getLogger(ReceiveService.class);
+    @Autowired
+    private ConnectionThreadLocal connectionThreadLocal;
 
     public void receiveMsg(String url) {
         try {
@@ -41,7 +43,8 @@ public class ReceiveService {
             pageInfoEntity.setDescription(description);
             pageInfoEntity.setInformation(information);
             pageInfoEntity.setBkUrl(url);
-            JdbcConnector.insertData(pageInfoEntity);
+            //向数据库中插入数据
+            connectionThreadLocal.insertData(pageInfoEntity);
             if ("".equals(imageUrl) || "".equals(name) || "".equals(description) || "".equals(information)) {
                 log.warn("[Something is empty] [" + url + "]" + pageInfoEntity);
             }
@@ -96,7 +99,7 @@ public class ReceiveService {
         return desc;
     }
 
-    /*获取图片*/
+    /*获取图片URL*/
     private String getPicture(Document doc) {
         List<String> conditions = new ArrayList<String>();
         //图片筛选条件
