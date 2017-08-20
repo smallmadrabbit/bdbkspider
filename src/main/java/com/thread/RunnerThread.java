@@ -2,7 +2,7 @@ package com.thread;
 
 import com.exception.IndexTouchBound;
 import com.model.IndexModel;
-import com.service.SpilderService;
+import com.service.SenderService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,14 +17,14 @@ import java.net.SocketTimeoutException;
 public class RunnerThread implements Runnable {
     private static Logger log = Logger.getLogger(RunnerThread.class);
     @Autowired
-    private SpilderService spilderService;
+    private SenderService senderService;
     private Integer index;
     private Integer startNum;
     private Integer endNum;
     private Integer outTimeSleepTime;
     private Integer periodTime;
 
-    private Boolean flag;
+    private Boolean flag = true;
 
     public RunnerThread() {
     }
@@ -47,18 +47,19 @@ public class RunnerThread implements Runnable {
         if (periodTime == null || periodTime < 0) {
             periodTime = 200;
         }
-        while (true) {
+        while (flag) {
             try {
                 index = IndexModel.getIndex();
-                spilderService.getUrl(index);
+                senderService.getUrl(index);
                 Thread.sleep(periodTime);
-
             } catch(IndexTouchBound e){
+                log.debug("触发结束条件");
+                this.setFlag(false);
                 break;
             } catch (SocketTimeoutException e) {
                 try {
                     Thread.sleep(outTimeSleepTime);
-                    spilderService.getUrl(index);
+                    senderService.getUrl(index);
                 } catch (InterruptedException e2) {
                     continue;
                 } catch (IOException e3) {

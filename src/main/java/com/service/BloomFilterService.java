@@ -25,7 +25,8 @@ public class BloomFilterService {
             return false;
         }else {
             //如果不存在，将对应的hash位置为1
-            for (int hash : hashs) {
+            for (int hash:
+                 hashs) {
                 jedisCluster.setbit(BLOOM_NAME,hash,true);
             }
             return true;
@@ -46,7 +47,7 @@ public class BloomFilterService {
 
 
     public int[] toHashs(String url){
-        int[] hashs = new int[7];
+        int[]  hashs= new int[7];
         hashs[0] = Math.abs(HashUtils.additiveHash(url, 47) % MAX_SIZE);
         hashs[1] = Math.abs(HashUtils.rotatingHash(url, 47) % MAX_SIZE);
         hashs[2] = Math.abs(HashUtils.oneByOneHash(url)) % MAX_SIZE;
