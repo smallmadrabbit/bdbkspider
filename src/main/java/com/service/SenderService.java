@@ -9,7 +9,7 @@ import org.jsoup.Jsoup;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +26,7 @@ public class SenderService {
     private BloomFilterService bloomFilterService;
 
     @Autowired
-    private JedisCluster jedisCluster;
+    private Jedis jedis;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;

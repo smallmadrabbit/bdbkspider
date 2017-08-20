@@ -4,7 +4,6 @@ import com.utils.HashUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
 
 /**
  * Created by SmallMadRabbit on 2017/7/7 0007.
@@ -12,13 +11,13 @@ import redis.clients.jedis.JedisCluster;
 @Service
 public class BloomFilterService {
     @Autowired
-    private JedisCluster jedisCluster;
+    private Jedis jedis;
     private static final int MAX_SIZE = 500000000;
     private final String BLOOM_NAME = "BLOOM_BITS";
 
     public boolean add(String str){
-        if (!jedisCluster.exists(BLOOM_NAME)){
-            jedisCluster.setbit(BLOOM_NAME,MAX_SIZE,false);
+        if (!jedis.exists(BLOOM_NAME)){
+            jedis.setbit(BLOOM_NAME,MAX_SIZE,false);
         }
         int[] hashs = toHashs(str);
         if (isExist(hashs)){
@@ -28,7 +27,7 @@ public class BloomFilterService {
             //如果不存在，将对应的hash位置为1
             for (int hash:
                  hashs) {
-                jedisCluster.setbit(BLOOM_NAME,hash,true);
+                jedis.setbit(BLOOM_NAME,hash,true);
             }
             return true;
         }
@@ -38,7 +37,7 @@ public class BloomFilterService {
     public boolean isExist(int[] hashs){
         boolean flag = true;
         for (int hash:hashs) {
-            flag = flag && jedisCluster.getbit(BLOOM_NAME, hash);
+            flag = flag && jedis.getbit(BLOOM_NAME, hash);
             if (!flag){
                 break;
             }
